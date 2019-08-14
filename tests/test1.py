@@ -6,6 +6,10 @@ from pathlib import Path
 
 
 USERNAME = os.getenv('USERNAME', 'ubuntu')
+template_args = {
+    "user": USERNAME,
+
+}
 
 
 def RunCmd(cmd):
@@ -84,4 +88,7 @@ class CourseThree(unittest.TestCase):
         self.assertTrue(len(output.split('\n')) > 0)
 
 if __name__ == '__main__':
-    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner())
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(
+        combine_reports=True,
+        report_name="report", add_timestamp=False,
+        template='template.j2', template_args=template_args))

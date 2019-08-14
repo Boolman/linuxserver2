@@ -1,4 +1,5 @@
 /lib/*
 /bin/*
 /include/**
+/reports/*
 pip-selfcheck.json
