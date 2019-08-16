@@ -65,7 +65,7 @@ class Lektion1_uppg2(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.CRONJOB_FILE))
         with open(self.CRONJOB_FILE, 'r') as f:
             content = f.read().strip()
-        self.assertEqual(content, f"*/5 8-17 * * 1-5 {USERNAME} echo hello world")
+        self.assertTrue("*/5 8-17 * * 1-5" in content)
 
 
 class Lektion2_uppg1(unittest.TestCase):
