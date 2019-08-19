@@ -107,7 +107,8 @@ class LektionX_uppg1(unittest.TestCase):
             if self.nm[host].has_tcp(21):
                 self.hosts['ftp'] = host
             if self.nm[host].has_tcp(25):
-                self.hosts['smtp'] = host
+                if 'dnsmasq' not in self.nm[host]['tcp'][53]['product']:
+                    self.hosts['smtp'] = host
             if self.nm[host].has_tcp(53):
                 self.hosts['dns'] = host
             if self.nm[host].has_tcp(80):
@@ -116,7 +117,7 @@ class LektionX_uppg1(unittest.TestCase):
     def test_vm_ftp(self):
         self.assertTrue('ftp' in self.hosts)
         self.assertTrue('OpenSSH' in self.nm[self.hosts['ftp']]['tcp'][21]['product'])
-        with pysftp.Connection(host=self.nm[self.hosts['ftp']]['tcp'][21],
+        with pysftp.Connection(host=self.nm[self.hosts['ftp']]['addresses']['ipv4'],
                                 port=21,
                                 username=USERNAME,
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
@@ -125,7 +126,7 @@ class LektionX_uppg1(unittest.TestCase):
     def test_vm_dns(self):
         self.assertTrue('dns' in self.hosts)
         resolver = dns.resolver.Resolver(configure=False)
-        resolver.nameservers = [self.nm[self.hosts['ftp']]['tcp'][53]]
+        resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
         try:
             answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
             self.assertTrue(len(answer) > 0)
