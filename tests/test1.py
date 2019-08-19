@@ -104,16 +104,16 @@ class LektionX_uppg1(unittest.TestCase):
         self.nm.scan(hosts='192.168.122.0/24', ports='21,25,53,80,389')
         self.hosts = {}
         for host in self.nm.all_hosts():
-            if self.nm[host]['tcp'][21]['state'] == 'open'
+            if self.nm[host]['tcp'][21]['state'] == 'open':
                 self.hosts['ftp'] = host
-            if self.nm[host]['tcp'][25]['state'] == 'open'
+            if self.nm[host]['tcp'][25]['state'] == 'open':
                 self.hosts['smtp'] = host
-            if self.nm[host]['tcp'][53]['state'] == 'open'
+            if self.nm[host]['tcp'][53]['state'] == 'open':
                 if 'dnsmasq' not in self.nm[host]['tcp'][53]['product']:
                     self.hosts['dns'] = host
-            if self.nm[host]['tcp'][80]['state'] == 'open'
+            if self.nm[host]['tcp'][80]['state'] == 'open':
                 self.hosts['http'] = host
-            if self.nm[host]['tcp'][389]['state'] == 'open'
+            if self.nm[host]['tcp'][389]['state'] == 'open':
                 self.hosts['ldap'] = host
 
 
