@@ -124,14 +124,13 @@ class LektionX_uppg1(unittest.TestCase):
 
     def test_vm_dns(self):
         self.assertTrue('dns' in self.hosts)
-
-		resolver = dns.resolver.Resolver(configure=False)
-		resolver.nameservers = [self.nm[self.hosts['ftp']]['tcp'][53]]
-		try:
-			answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
-			self.assertTrue(len(answer) > 0)
-		except dns.resolver.NXDOMAIN:
-			self.assertTrue(False)
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = [self.nm[self.hosts['ftp']]['tcp'][53]]
+        try:
+            answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
+            self.assertTrue(len(answer) > 0)
+        except dns.resolver.NXDOMAIN:
+            self.assertTrue(False)
 
 
 
