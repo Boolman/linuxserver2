@@ -97,7 +97,7 @@ class LektionX_uppg1(unittest.TestCase):
     """
     def setUp(self):
         self.nm = nmap.PortScanner()
-        self.nm.scan(hosts='127.0.0.1/32', ports='21,25,80')
+        self.nm.scan(hosts='192.168.122.0/24', ports='21,25,80,389')
         self.hosts = {}
         for host in self.nm.all_hosts():
             if self.nm[host].has_tcp(21):
