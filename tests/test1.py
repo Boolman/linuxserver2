@@ -91,7 +91,7 @@ class Lektion2_uppg1(unittest.TestCase):
         self.assertTrue(len(str(output).split('\n')) > 0)
 
 
-class LektionX_uppg1(unittest.TestCase):
+class Labb(unittest.TestCase):
     """
       scan kvm vm's for running services
       [ ftp, smtp, http ]
@@ -101,7 +101,7 @@ class LektionX_uppg1(unittest.TestCase):
     """
     def setUp(self):
         self.nm = nmap.PortScanner()
-        self.nm.scan(hosts='192.168.122.0/24', ports='21,25,53,80,389')
+        self.nm.scan(hosts='192.168.122.2-254', ports='21,25,53,80,389')
         self.hosts = {}
         for host in self.nm.all_hosts():
             if self.nm[host]['tcp'][21]['state'] == 'open':
