@@ -4,3 +4,4 @@ MarkupSafe==1.1.1
 python-nmap==0.6.1
 pysftp==0.2.9
 dnspython==1.16.0
+requests-html==0.10.0
