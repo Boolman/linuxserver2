@@ -112,6 +112,10 @@ class LektionX_uppg1(unittest.TestCase):
     def test_vm_ftp(self):
         self.assertTrue('ftp' in self.hosts)
         self.assertTrue('FTP' in self.nm[self.hosts['ftp']]['tcp'][21]['product'])
+        with pysftp.Connection(host=self.nm[self.hosts['ftp']]['tcp'][21]
+                                username=USERNAME,
+                                private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
+            self.assertTrue(ftp.isfile('ftp_file')
 
     def test_vm_smtp(self):
         self.assertTrue('smtp' in self.hosts)
