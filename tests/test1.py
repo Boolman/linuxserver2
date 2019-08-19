@@ -4,6 +4,8 @@ import subprocess
 import os
 from pathlib import Path
 import nmap
+import pysftp
+import dns.resolver
 
 
 USERNAME = os.getenv('USERNAME', 'ubuntu')
@@ -99,23 +101,39 @@ class LektionX_uppg1(unittest.TestCase):
     """
     def setUp(self):
         self.nm = nmap.PortScanner()
-        self.nm.scan(hosts='192.168.122.0/24', ports='21,25,80,389')
+        self.nm.scan(hosts='192.168.122.0/24', ports='21,25,53,80,389')
         self.hosts = {}
         for host in self.nm.all_hosts():
             if self.nm[host].has_tcp(21):
                 self.hosts['ftp'] = host
             if self.nm[host].has_tcp(25):
                 self.hosts['smtp'] = host
+            if self.nm[host].has_tcp(53):
+                self.hosts['dns'] = host
             if self.nm[host].has_tcp(80):
                 self.hosts['http'] = host
 
     def test_vm_ftp(self):
         self.assertTrue('ftp' in self.hosts)
-        self.assertTrue('FTP' in self.nm[self.hosts['ftp']]['tcp'][21]['product'])
-        with pysftp.Connection(host=self.nm[self.hosts['ftp']]['tcp'][21]
+        self.assertTrue('OpenSSH' in self.nm[self.hosts['ftp']]['tcp'][21]['product'])
+        with pysftp.Connection(host=self.nm[self.hosts['ftp']]['tcp'][21],
+                                port=21,
                                 username=USERNAME,
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
-            self.assertTrue(ftp.isfile('ftp_file')
+            self.assertTrue(ftp.isfile('ftp_file'))
+
+    def test_vm_dns(self):
+        self.assertTrue('dns' in self.hosts)
+
+		resolver = dns.resolver.Resolver(configure=False)
+		resolver.nameservers = [self.nm[self.hosts['ftp']]['tcp'][53]]
+		try:
+			answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
+			self.assertTrue(len(answer) > 0)
+		except dns.resolver.NXDOMAIN:
+			self.assertTrue(False)
+
+
 
     def test_vm_smtp(self):
         self.assertTrue('smtp' in self.hosts)
