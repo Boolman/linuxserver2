@@ -86,7 +86,7 @@ class Lektion2_uppg1(unittest.TestCase):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         output, err = p.communicate()
-        self.assertTrue(len(output.split('\n')) > 0)
+        self.assertTrue(len(str(output).split('\n')) > 0)
 
 
 class LektionX_uppg1(unittest.TestCase):
