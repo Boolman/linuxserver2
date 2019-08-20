@@ -7,7 +7,7 @@ import nmap
 import pysftp
 import dns.resolver
 from requests_html import HTMLSession
-
+from smtplib import SMTP
 
 USERNAME = os.getenv('USERNAME', 'ubuntu')
 template_args = {
@@ -142,6 +142,9 @@ class Labb(unittest.TestCase):
     def test_vm_smtp(self):
         self.assertTrue('smtp' in self.hosts)
         self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
+        with SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4'] as smtp:
+            session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
+            self.assertTrue(session[0] == 220)
 
 
     def test_vm_http(self):
