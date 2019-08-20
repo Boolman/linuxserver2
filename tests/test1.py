@@ -149,8 +149,8 @@ class Labb(unittest.TestCase):
         self.assertTrue('http' in self.nm[self.hosts['http']]['tcp'][80]['product'])
 
         session = HTMLSession()
-        r = session.get(f"http://{self.nm[self.hosts['dns']]['addresses']['ipv4']}")
-        self.assertTrue(f{USERNAME} in r.html.text)
+        r = session.get(f"http://{self.nm[self.hosts['http']]['addresses']['ipv4']}")
+        self.assertTrue(f"{USERNAME}" in r.html.text)
     """
 
 
