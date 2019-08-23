@@ -131,10 +131,17 @@ class Labb(unittest.TestCase):
         resolver = dns.resolver.Resolver(configure=False)
         resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
         try:
-            mx = resulver.query(f"{USERNAME}.local", "MX")
+            # Test MX
+            mx = resolver.query(f'{USERNAME}.local', 'MX')
             mx = mx[0].exchange.to_text()
             a = resolver.query(mx, 'A')
-            self.assertTrue(len(answer) > 0)
+            self.assertTrue(len(a) > 0)
+            # Test NS
+            a = []
+            ns = resolver.query(f'{USERNAME}.local', 'NS')
+            ns = ns[0].to_text()
+            a = resolver.query(ns, 'A')
+            self.assertTrue(len(a) > 0)
         except dns.resolver.NXDOMAIN:
             self.assertTrue(False)
         except dns.resolver.NoAnswer:
