@@ -99,7 +99,6 @@ class Labb(unittest.TestCase):
       'product' is found with nmap -sV -p <port> <ip>
     """
 
-    """
     def setUp(self):
         self.nm = nmap.PortScanner()
         self.nm.scan(hosts='192.168.122.2-254', ports='21,25,53,80,389')
@@ -142,9 +141,11 @@ class Labb(unittest.TestCase):
     def test_vm_smtp(self):
         self.assertTrue('smtp' in self.hosts)
         self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
-        with SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4'] as smtp:
+        with SMTP() as smtp:
             session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
             self.assertTrue(session[0] == 220)
+            result = smtp.sendmail("unittest@localhost", "ubuntu", "Test email")
+            self.assertFalse(len(result) > 0)
 
 
     def test_vm_http(self):
@@ -154,7 +155,6 @@ class Labb(unittest.TestCase):
         session = HTMLSession()
         r = session.get(f"http://{self.nm[self.hosts['http']]['addresses']['ipv4']}")
         self.assertTrue(f"{USERNAME}" in r.html.text)
-    """
 
 
 if __name__ == '__main__':
