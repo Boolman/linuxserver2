@@ -7,7 +7,7 @@ import nmap
 import pysftp
 import dns.resolver
 from requests_html import HTMLSession
-
+from smtplib import SMTP
 
 USERNAME = os.getenv('USERNAME', 'ubuntu')
 template_args = {
@@ -99,7 +99,6 @@ class Labb(unittest.TestCase):
       'product' is found with nmap -sV -p <port> <ip>
     """
 
-    """
     def setUp(self):
         self.nm = nmap.PortScanner()
         self.nm.scan(hosts='192.168.122.2-254', ports='21,25,53,80,389')
@@ -127,21 +126,67 @@ class Labb(unittest.TestCase):
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
             self.assertTrue(ftp.isfile('ftp_file'))
 
-    def test_vm_dns(self):
+    def test_vm_dns_recursion(self):
         self.assertTrue('dns' in self.hosts)
         resolver = dns.resolver.Resolver(configure=False)
         resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
         try:
-            answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
-            self.assertTrue(len(answer) > 0)
+            resolver.query('google.com', 'A')
+            self.assertFalse(True)
+        except dns.resolver.NoNameservers:
+            self.assertTrue(True)
+
+    def test_vm_dns_valid_mx(self):
+        self.assertTrue('dns' in self.hosts)
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
+        try:
+            # Test MX
+            mx = resolver.query(f'{USERNAME}.local', 'MX')
+            mx = mx[0].exchange.to_text()
+            a = resolver.query(mx, 'A')
+            self.assertTrue(len(a) > 0)
         except dns.resolver.NXDOMAIN:
+            self.assertTrue(False)
+        except dns.resolver.NoAnswer:
             self.assertTrue(False)
 
 
 
-    def test_vm_smtp(self):
+    def test_vm_dns_valid_ns(self):
+        self.assertTrue('dns' in self.hosts)
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
+        try:
+            ns = resolver.query(f'{USERNAME}.local', 'NS')
+            ns = ns[0].to_text()
+            a = resolver.query(ns, 'A')
+            self.assertTrue(len(a) > 0)
+        except dns.resolver.NXDOMAIN:
+            self.assertTrue(False)
+        except dns.resolver.NoAnswer:
+            self.assertTrue(False)
+
+
+    def test_vm_smtp_bad_helo(self):
         self.assertTrue('smtp' in self.hosts)
         self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
+        result = SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']).helo(name='asdasdasd')
+        self.assertNotEqual(result[0], '250')
+
+
+
+    def test_vm_smtp_bad_from(self):
+        self.assertTrue('smtp' in self.hosts)
+        self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
+        with SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']) as smtp:
+            session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
+            try:
+                result = smtp.sendmail("unittest@asdasdasdas.a", "root", "Test email")
+                self.assertEqual(result[0], '250')
+            except:
+                self.assertTrue(True)
+
 
 
     def test_vm_http(self):
@@ -151,7 +196,6 @@ class Labb(unittest.TestCase):
         session = HTMLSession()
         r = session.get(f"http://{self.nm[self.hosts['http']]['addresses']['ipv4']}")
         self.assertTrue(f"{USERNAME}" in r.html.text)
-    """
 
 
 if __name__ == '__main__':
