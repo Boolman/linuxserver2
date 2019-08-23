@@ -126,6 +126,16 @@ class Labb(unittest.TestCase):
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
             self.assertTrue(ftp.isfile('ftp_file'))
 
+    def test_vm_dns_recursion(self):
+        self.assertTrue('dns' in self.hosts)
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
+        try:
+            resolver.query('google.com', 'A')
+            self.assertFalse(True)
+        except dns.resolver.NoNameservers:
+            self.assertTrue(True)
+
     def test_vm_dns_valid_mx(self):
         self.assertTrue('dns' in self.hosts)
         resolver = dns.resolver.Resolver(configure=False)
