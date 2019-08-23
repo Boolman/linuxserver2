@@ -131,9 +131,13 @@ class Labb(unittest.TestCase):
         resolver = dns.resolver.Resolver(configure=False)
         resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
         try:
-            answer = resolver.query(f'smtp.{USERNAME}.local', 'A')
+            mx = resulver.query(f"{USERNAME}.local", "MX")
+            mx = mx[0].exchange.to_text()
+            a = resolver.query(mx, 'A')
             self.assertTrue(len(answer) > 0)
         except dns.resolver.NXDOMAIN:
+            self.assertTrue(False)
+        except dns.resolver.NoAnswer:
             self.assertTrue(False)
 
 
