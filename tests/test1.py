@@ -126,7 +126,7 @@ class Labb(unittest.TestCase):
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
             self.assertTrue(ftp.isfile('ftp_file'))
 
-    def test_vm_dns(self):
+    def test_vm_dns_valid_mx(self):
         self.assertTrue('dns' in self.hosts)
         resolver = dns.resolver.Resolver(configure=False)
         resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
@@ -136,8 +136,18 @@ class Labb(unittest.TestCase):
             mx = mx[0].exchange.to_text()
             a = resolver.query(mx, 'A')
             self.assertTrue(len(a) > 0)
-            # Test NS
-            a = []
+        except dns.resolver.NXDOMAIN:
+            self.assertTrue(False)
+        except dns.resolver.NoAnswer:
+            self.assertTrue(False)
+
+
+
+    def test_vm_dns_valid_ns(self):
+        self.assertTrue('dns' in self.hosts)
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = [self.nm[self.hosts['dns']]['addresses']['ipv4']]
+        try:
             ns = resolver.query(f'{USERNAME}.local', 'NS')
             ns = ns[0].to_text()
             a = resolver.query(ns, 'A')
