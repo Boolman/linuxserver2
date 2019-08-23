@@ -122,7 +122,7 @@ class Labb(unittest.TestCase):
         self.assertTrue('OpenSSH' in self.nm[self.hosts['ftp']]['tcp'][21]['product'])
         with pysftp.Connection(host=self.nm[self.hosts['ftp']]['addresses']['ipv4'],
                                 port=21,
-                                username=USERNAME,
+                                username=f"{USERNAME}_ftp",
                                 private_key=f"/home/{USERNAME}/.ssh/id_rsa") as ftp:
             self.assertTrue(ftp.isfile('ftp_file'))
 
