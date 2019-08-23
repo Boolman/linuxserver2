@@ -152,7 +152,7 @@ class Labb(unittest.TestCase):
         self.assertTrue('smtp' in self.hosts)
         self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
         result = SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']).helo(name='asdasdasd')
-        self.assertEqual(result[0], '250')
+        self.assertNotEqual(result[0], '250')
 
 
 
