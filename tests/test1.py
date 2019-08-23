@@ -155,7 +155,7 @@ class Labb(unittest.TestCase):
         with SMTP() as smtp:
             session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
             self.assertTrue(session[0] == 220)
-            result = smtp.sendmail("unittest@localhost", "ubuntu", "Test email")
+            result = smtp.sendmail("unittest@localhost", "root", "Test email")
             self.assertFalse(len(result) > 0)
 
 
