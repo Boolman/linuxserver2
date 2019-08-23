@@ -148,15 +148,25 @@ class Labb(unittest.TestCase):
             self.assertTrue(False)
 
 
-
-    def test_vm_smtp(self):
+    def test_vm_smtp_bad_helo(self):
         self.assertTrue('smtp' in self.hosts)
         self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
-        with SMTP() as smtp:
+        result = SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']).helo(name='asdasdasd')
+        self.assertEqual(result[0], '250')
+
+
+
+    def test_vm_smtp_bad_from(self):
+        self.assertTrue('smtp' in self.hosts)
+        self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
+        with SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']) as smtp:
             session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
-            self.assertTrue(session[0] == 220)
-            result = smtp.sendmail("unittest@localhost", "root", "Test email")
-            self.assertFalse(len(result) > 0)
+            try:
+                result = smtp.sendmail("unittest@asdasdasdas.a", "root", "Test email")
+                self.assertEqual(result[0], '250')
+            except:
+                self.assertTrue(True)
+
 
 
     def test_vm_http(self):
