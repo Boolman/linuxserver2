@@ -68,7 +68,7 @@ class Lektion1_uppg2(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.CRONJOB_FILE))
         with open(self.CRONJOB_FILE, 'r') as f:
             content = f.read().strip()
-        self.assertTrue("*/5 8-17 * * 1-5" in content)
+        self.assertIn("*/5 8-17 * * 1-5", content)
 
 
 class Lektion2_uppg1(unittest.TestCase):
@@ -186,6 +186,18 @@ class Labb(unittest.TestCase):
                 self.assertEqual(result[0], '250')
             except:
                 self.assertTrue(True)
+
+
+    def test_vm_smtp_send(self):
+        self.assertTrue('smtp' in self.hosts)
+        self.assertTrue('smtp' in self.nm[self.hosts['smtp']]['tcp'][25]['product'])
+        with SMTP(self.nm[self.hosts['smtp']]['addresses']['ipv4']) as smtp:
+            session = smtp.connect(host=self.nm[self.hosts['smtp']]['addresses']['ipv4'], port=25)
+            try:
+                result = smtp.sendmail("unittest@nackademin.se", "root", "Test email")
+                self.assertEqual(result, {})
+            except:
+                self.assertTrue(False)
 
 
 
