@@ -1,5 +1,5 @@
 html-testRunner==1.2
-Jinja2==2.9.5
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 python-nmap==0.6.1
 pysftp==0.2.9
